@@ -1,0 +1,14 @@
+region: "CO"          # Target country (CO = Colombia)
+time_range: "12_months"
+
+topics:
+  - name: "artificial intelligence"
+    category: "AI"
+  - name: "industrial robots"
+    category: "Automation"
+  - name: "security drones"
+    category: "Security"
+  - name: "lithium batteries"
+    category: "Energy"
+  - name: "cybersecurity"
+    category: "Security"
