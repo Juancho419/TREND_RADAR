@@ -21,17 +21,23 @@ def fetch_trend_data(topic: TrendTopic, region: str, time_range: str) -> dict:
 
     For now, this function returns a dummy dictionary, just to define the shape
     of the data we expect.
-
-    Later, it will:
-    - call Google Trends
-    - retrieve interest over time, interest by region, and related queries
     """
-    # Temporary dummy data structure
+    # Temporary dummy data structure with realistic shape
+    interest_over_time: List[int] = [10, 20, 30, 40, 50]
+    interest_by_region = [
+        {"name": "Bogotá", "value": 80},
+        {"name": "Medellín", "value": 70},
+    ]
+    related_queries = [
+        f"how to use {topic.name}",
+        f"{topic.name} examples",
+    ]
+
     return {
         "topic_name": topic.name,
         "region": region,
         "time_range": time_range,
-        "interest_over_time": [],
-        "interest_by_region": [],
-        "related_queries": [],
+        "interest_over_time": interest_over_time,
+        "interest_by_region": interest_by_region,
+        "related_queries": related_queries,
     }

@@ -14,6 +14,24 @@ from typing import List
 from models import TrendTopic, TrendResult
 from trends_client import fetch_trend_data
 
+def classify_trend(growth_pct: float) -> str:
+    """
+    Classify the trend_status based on growth_pct.
+
+    Rules (first version):
+    - cold:    growth_pct < 5
+    - warm:    5 <= growth_pct < 15
+    - hot:     15 <= growth_pct < 30
+    - boiling: growth_pct >= 30
+    """
+    if growth_pct < 5.0:
+        return "cold"
+    if growth_pct < 15.0:
+        return "warm"
+    if growth_pct < 30.0:
+        return "hot"
+    return "boiling"
+
 
 def analyze_topics(topics: List[TrendTopic], region: str, time_range: str) -> List[TrendResult]:
     """
@@ -40,10 +58,29 @@ def analyze_topics(topics: List[TrendTopic], region: str, time_range: str) -> Li
             f"(region={trend_data['region']}, time_range={trend_data['time_range']})"
         )
 
-        # 2) Very simple fake logic just to have different numbers
-        current_interest = 20 * index
-        growth_pct = 5.0 * index
-        trend_status = "warm"
+        # 2) Use interest_over_time to compute current_interest and growth_pct
+        series = trend_data.get("interest_over_time", [])
+
+        if len(series) >= 2:
+            start_value = float(series[0])
+            end_value = float(series[-1])
+            current_interest = int(end_value)
+
+            if start_value > 0:
+                growth_pct = ((end_value - start_value) / start_value) * 100.0
+            else:
+                # Avoid division by zero: if start is 0, treat growth as 0 for now
+                growth_pct = 0.0
+        elif len(series) == 1:
+            # Only one point: current_interest is that value, no growth information
+            current_interest = int(series[0])
+            growth_pct = 0.0
+        else:
+            # Empty series: no data
+            current_interest = 0
+            growth_pct = 0.0
+
+        trend_status = classify_trend(growth_pct)
 
         result = TrendResult(
             topic=topic,
