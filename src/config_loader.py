@@ -9,7 +9,10 @@ This module will:
 
 from pathlib import Path
 from typing import Any, Dict, List
+
 import yaml
+
+from models import TrendTopic
 
 
 def load_config() -> Dict[str, Any]:
@@ -19,7 +22,7 @@ def load_config() -> Dict[str, Any]:
     Returns a dictionary with:
     - region: str
     - time_range: str
-    - topics: list of dicts with name and category
+    - topics: list of TrendTopic objects
     """
     # 1. Build the path to the YAML file
     config_path = Path(__file__).resolve().parent.parent / "config" / "topics.yaml"
@@ -29,10 +32,17 @@ def load_config() -> Dict[str, Any]:
     with config_path.open("r", encoding="utf-8") as f:
         raw_data = yaml.safe_load(f)
 
-    # 3. Extract structured fields
+    # 3. Extract basic fields
     region: str = raw_data.get("region", "")
     time_range: str = raw_data.get("time_range", "")
-    topics: List[Dict[str, str]] = raw_data.get("topics", [])
+    raw_topics: List[Dict[str, str]] = raw_data.get("topics", [])
+
+    # 4. Convert raw topics (dicts) into TrendTopic objects
+    topics: List[TrendTopic] = []
+    for item in raw_topics:
+        name = item.get("name", "")
+        category = item.get("category", "")
+        topics.append(TrendTopic(name=name, category=category))
 
     print("Configuration loaded:")
     print(f"  region     : {region}")
