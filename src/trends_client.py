@@ -1,8 +1,8 @@
 """
-Trends client for the Trend Radar MVP.
+Dummy trends client for the Trend Radar MVP.
 
-This module will be responsible for talking to Google Trends
-(or any other data source) and returning clean data for analysis.
+This is TEMPORARY test data and WILL be replaced by real Google Trends logic.
+It does NOT define which topics the Radar will support, it only simulates shape.
 """
 
 from typing import List
@@ -19,18 +19,20 @@ def fetch_trend_data(topic: TrendTopic, region: str, time_range: str) -> dict:
     - region: country code, e.g. "CO"
     - time_range: string like "12_months"
 
-    For now, this function returns a dummy dictionary, just to define the shape
-    of the data we expect.
+    Returns:
+    - A dictionary with the expected structure.
     """
-    # Temporary dummy data structure with realistic shape
-    interest_over_time: List[int] = [10, 20, 30, 40, 50]
+    # Simple dummy time series (0–100)
+    interest_over_time: List[int] = [10, 20, 35, 50, 70]
+
     interest_by_region = [
         {"name": "Bogotá", "value": 80},
-        {"name": "Medellín", "value": 70},
+        {"name": "Medellín", "value": 65},
     ]
+
     related_queries = [
-        f"how to use {topic.name}",
-        f"{topic.name} examples",
+        f"{topic.name} use cases",
+        f"{topic.name} in {region}",
     ]
 
     return {
