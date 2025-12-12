@@ -58,4 +58,21 @@ a dictionary with this structure:
   Example:
     ["how to use AI at work", "AI tools for small business"]
 
+## Google Trends integration plan (experimental branch)
+
+Goal:
+Use real Google Trends data for each topic without changing the
+analyzer or the reporter.
+
+Design:
+
+- A new module `trends_google.py` will contain the real integration.
+
+- It will expose a single function:
+
+  ```python
+  fetch_trend_data_google(topic_name: str, region: str, time_range: str) -> dict
+  ```
+
+
 

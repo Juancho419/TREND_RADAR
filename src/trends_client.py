@@ -1,28 +1,29 @@
 """
-Dummy trends client for the Trend Radar MVP.
+Trends client for the Trend Radar MVP.
 
-This is TEMPORARY test data and WILL be replaced by real Google Trends logic.
-It does NOT define which topics the Radar will support, it only simulates shape.
+This module acts as a thin wrapper:
+- By default, it returns dummy data (USE_GOOGLE = False).
+- In the future, it can call the real Google Trends integration
+  in `trends_google.py` when USE_GOOGLE = True.
 """
 
 from typing import List
 
 from models import TrendTopic
+from trends_google import fetch_trend_data_google
+
+# Global flag to choose backend.
+# - False -> dummy data (safe, no network calls).
+# - True  -> use Google Trends (experimental).
+USE_GOOGLE: bool = True
 
 
-def fetch_trend_data(topic: TrendTopic, region: str, time_range: str) -> dict:
+def _generate_dummy_data(topic: TrendTopic, region: str, time_range: str) -> dict:
     """
-    Placeholder function to fetch trend data for a single topic.
+    Generate simple fake trend data for a topic.
 
-    Parameters:
-    - topic: TrendTopic object (name and category)
-    - region: country code, e.g. "CO"
-    - time_range: string like "12_months"
-
-    Returns:
-    - A dictionary with the expected structure.
+    This is only for local testing. It does NOT represent real trends.
     """
-    # Simple dummy time series (0–100)
     interest_over_time: List[int] = [10, 20, 35, 50, 70]
 
     interest_by_region = [
@@ -43,3 +44,26 @@ def fetch_trend_data(topic: TrendTopic, region: str, time_range: str) -> dict:
         "interest_by_region": interest_by_region,
         "related_queries": related_queries,
     }
+
+
+def fetch_trend_data(topic: TrendTopic, region: str, time_range: str) -> dict:
+    """
+    Fetch trend data for a single topic.
+
+    If USE_GOOGLE is False (default), returns dummy data.
+    If USE_GOOGLE is True, calls the Google Trends integration.
+    """
+    if USE_GOOGLE:
+        # Experimental path: real Google Trends (still a placeholder).
+        data = fetch_trend_data_google(
+            topic_name=topic.name,
+            region=region,
+            time_range=time_range,
+        )
+        # If for some reason Google returns an empty series, fall back.
+        if not data.get("interest_over_time"):
+            return _generate_dummy_data(topic, region, time_range)
+        return data
+
+    # Default: dummy mode (safe, offline).
+    return _generate_dummy_data(topic, region, time_range)
